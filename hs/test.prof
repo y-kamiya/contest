@@ -1,0 +1,37 @@
+	Thu Mar  6 23:35 2014 Time and Allocation Profiling Report  (Final)
+
+	   test +RTS -p -RTS
+
+	total time  =        3.03 secs   (3031 ticks @ 1000 us, 1 processor)
+	total alloc =   4,929,664 bytes  (excludes profiling overheads)
+
+COST CENTRE            MODULE  %time %alloc
+
+elemIndex              Main     98.4   45.4
+lineDistance.lineDis.\ Main      1.4    3.2
+ops                    Main      0.0   16.2
+lineDistance.lineDis   Main      0.0   17.9
+ops'                   Main      0.0   16.2
+
+
+                                                                      individual     inherited
+COST CENTRE                 MODULE                  no.     entries  %time %alloc   %time %alloc
+
+MAIN                        MAIN                     40           0    0.0    0.0   100.0  100.0
+ main                       Main                     81           0    0.0    0.2     0.0    0.2
+ CAF                        GHC.IO.Encoding.Iconv    61           0    0.0    0.0     0.0    0.0
+ CAF                        GHC.IO.Encoding          60           0    0.0    0.1     0.0    0.1
+ CAF                        GHC.Conc.Signal          49           0    0.0    0.0     0.0    0.0
+ CAF                        GHC.IO.Handle.FD         48           0    0.0    0.7     0.0    0.7
+ CAF                        Main                     47           0    0.0    0.0   100.0   99.0
+  ops'                      Main                     91           1    0.0   16.2     0.0   16.2
+  ops                       Main                     84           1    0.0   16.2     0.0   16.2
+  main                      Main                     80           1    0.0    0.0   100.0   66.5
+   lineDistance             Main                     82           1    0.0    0.0   100.0   66.5
+    lineDistance.lineDis    Main                     83           1    0.0   17.9   100.0   66.5
+     lineDistance.lineDis.\ Main                     85       10000    1.4    3.2    99.9   48.7
+      getLineNum            Main                     87       20000    0.1    0.0    98.5   45.4
+       div                  Main                     90       20000    0.1    0.0     0.1    0.0
+       getLineNum.(...)     Main                     88       20000    0.0    0.0    98.4   45.4
+        elemIndex           Main                     89       20000   98.4   45.4    98.4   45.4
+      getLineNum.index      Main                     86       20000    0.0    0.0     0.0    0.0
