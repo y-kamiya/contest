@@ -1,3 +1,4 @@
+main :: IO ()
 main = do
     line <- getLine
     let a = words $ line
@@ -45,4 +46,4 @@ getPower w
     | v <= 284 = 10
     | v <= 326 = 11
     | otherwise = 12
-        where v = fromIntegral $ floor $ (read w / 60) * 10
+        where v = fromIntegral $ floor $ (read w / 60) * 10 + 0.5
