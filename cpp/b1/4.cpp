@@ -10,6 +10,7 @@ typedef map<int,int> M;
 
 int floor5(int);
 int ceil5(int);
+int ceil60(int);
 
 int main() {
     int n, s, e, ret;
@@ -79,6 +80,15 @@ int ceil5(int n) {
     if (r == 0) {
         return n;
     } else {
-        return n + (5 - r);
+        return ceil60(n + (5 - r));
     }
+}
+
+int ceil60(int n) {
+    int r = n % 100;
+    if (r != 60) {
+        return n;
+    }
+    return n + 40;
+
 }
