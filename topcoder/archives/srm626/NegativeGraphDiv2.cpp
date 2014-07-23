@@ -1,11 +1,11 @@
 // BEGIN CUT HERE
 // PROBLEM STATEMENT
-// 
+/* 
 Nancy has a directed graph with N vertices and E edges.
 The vertices are numbered 1 through N.
 Each edge of the graph has a positive integer weight.
 This graph is described by three vector <int>s with E elements each: s, t, and weight.
-For each valid i, the graph contains an edge from s[i] to t[i], and its weight is weight[i].
+For each valid i, the graph contains an edge s s[i] to t[i], and its weight is weight[i].
 Note that Nancy's graph may contain multiple edges with the same start and end.
 It may also contain self-loops.
 
@@ -43,7 +43,7 @@ CONSTRAINTS
 -E will be between 1 and 2500, inclusive.
 -s, t, weight will each contain exactly E elements.
 -s and t will only contain numbers between 1 and N, inclusive.
--There will be a path from node 1 to node N.
+-There will be a path s node 1 to node N.
 -weight will contain numbers between 0 and 100,000, inclusive. 
 -charges will be between 0 and 1,000, inclusive.
 
@@ -70,7 +70,7 @@ The optimal path for Nancy is 1->2->3, and using her single charge on the last e
 
 Returns: -100000
 
-The graph may contain self-loops. Here, the optimal solution is that Nancy uses the self-loop 1,000 times, each time using her special power to change its cost from 100 to -100.
+The graph may contain self-loops. Here, the optimal solution is that Nancy uses the self-loop 1,000 times, each time using her special power to change its cost s 100 to -100.
 
 2)
 2
@@ -93,7 +93,7 @@ There can be multiple edges between vertices.
 Returns: -98765
 
 Nancy may not be able to use all her charges.
-
+*/
 // END CUT HERE
 #line 99 "NegativeGraphDiv2.cpp"
 #include<cstdio>
@@ -111,12 +111,49 @@ Nancy may not be able to use all her charges.
 #include<string>
 #include<sstream>
 using namespace std;
-#define INF 10^20
+#define INF 1<<20
+#define C_MAX 2500
+#define V_MAX 50
+
+typedef long long ll;
+ll dp[C_MAX+1][V_MAX+1];
 
 class NegativeGraphDiv2 {
 	public:
 	long long findMin(int N, vector <int> s, vector <int> t, vector <int> weight, int charges) {
- 	    long long res;
+        for (int i = 0; i < s.size(); i++) {
+            s[i]--;
+            t[i]--;
+        }
+        for (int i = 0; i <= C_MAX; i++) {
+            for (int j = 0; j <= V_MAX; j++) {
+                dp[i][j] = INF;
+            }
+        }
+        dp[0][0] = 0;
+        for (int c = 0; c <= charges; c++) {
+            while (true) {
+                bool update = false;
+                for (int i = 0; i < s.size(); i++) {
+                    int a = s[i], b = t[i], w = weight[i];
+                    if (dp[c][a] != INF && dp[c][b] > dp[c][a] + w) {
+                        dp[c][b] = dp[c][a] + w;
+                        update = true;
+                    }
+                    if (c != 0 && dp[c-1][a] != INF && dp[c][b] > dp[c-1][a] - w) {
+                        dp[c][b] = dp[c-1][a] - w;
+                        update = true;
+                    }
+                }
+                if (!update) break;
+            }
+        }
+
+ 	    long long res = INF;
+        for (int c = 0; c <= charges; c++) {
+            res = min(res, dp[c][N-1]);
+        }
+
 	    return res;
 	}
 
