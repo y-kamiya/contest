@@ -33,43 +33,48 @@ void print(vector<T> vec, Tail... t) {
 #define DEBUG(...)
 #endif
 
-bool isOk(const vector<int> &A, int K, int L, int a) {
-    int n = A.size();
-    int k = 0;
-    int last = 0;
-    REP(i, n) {
-        if (A[i] - last >= a) {
-            ++k;
-            last = A[i];
-        }
-        if (k == K) {
-            return a <= (L - last);
-        }
-    }
-    return false;
+
+bool isOk(int a, int b) {
+    if (a - b >= 0) return true;
+    else return false;
 }
 
 void _main() {
-    int N, L, K;
-    cin >> N >> L >> K;
+    int N;
+    cin >> N;
 
-    vector<int> A(N), B(N);
+    vector<int> A(N);
     REP(i, N) cin >> A[i];
-    REP(i, N) {
-        if (i == 0) B[i] = A[i];
-        else B[i] = A[i] - A[i-1];
+
+    int Q;
+    cin >> Q;
+    vector<int> B(Q);
+    REP(i, Q) cin >> B[i];
+
+    sort(ALL(A));
+    DEBUG(A);
+
+    REP(i, Q) {
+        auto it = lower_bound(ALL(A), B[i]);
+        if (it != A.end()) DEBUG("it =", *(--it), B[i], *(++it));
+        int score;
+        if (it == A.end()) score = abs(A[N-1] - B[i]);
+        else if (it == A.begin()) score = abs(A[0] - B[i]);
+        else score = min(abs(*it - B[i]), abs(*(it-1) - B[i]));
+        cout << score << endl;
     }
 
-    int l = -1;
-    int r = L+1;
-    while (r-l > 1) {
-        int mid = (l+r)/2;
-        DEBUG(l, r, mid);
-        if (isOk(A, K, L, mid)) l = mid;
-        else r = mid;
-    }
-
-    cout << l << endl;
+    // REP(i, Q) {
+    //     int l = 0;
+    //     int r = N-1;
+    //     while (r-l > 1) {
+    //         int mid = (l+r)/2;
+    //         if (isOk(A[mid], B[i])) r = mid;
+    //         else l = mid;
+    //     }
+    //
+    //     cout << min(abs(B[i]-A[l]), abs(B[i]-A[r])) << endl;
+    // }
 }
 
 int main() {
@@ -77,7 +82,6 @@ int main() {
     return 0;
 }
 
-// 30minほど考えて計算量の収まる解法は思いつかず
-// 公式解答のstep1を読んで二分法を使うことがわかる
-// 答えを先にに決めてそれが正しいか否かを調べていくという方法は目からウロコな感じ
-// そこから20minほどでAC
+// AC 15min
+// 目視だと出力例のチェックに時間がかかってしまうタイプの問題
+// assertを使ったテストの形をそろそろ作った方がいいかも
