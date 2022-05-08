@@ -46,17 +46,16 @@ public:
         while ((1<<K) < V) ++K;
 
         dist.assign(V, NONE);
-        parent.assign(K, vector<int>(V, NONE));
+        parent.assign(K, vector(V, NONE));
 
         dfs(G, root);
 
         REP(k, K-1) {
             REP(v, V) {
-                int pv = parent[k][v];
-                if (pv == NONE) {
+                if (parent[k][v] == NONE) {
                     parent[k+1][v] = NONE;
                 } else {
-                    parent[k+1][v] = parent[k][pv];
+                    parent[k+1][v] = parent[k][parent[k][v]];
                 }
             }
         }
@@ -77,7 +76,7 @@ public:
 
         int diff = dist[u] - dist[v];
         REP(k, K) {
-            if (diff >> k & 1) u = parent[k][u];
+            if ((diff >> k) & 1) u = parent[k][u];
         }
 
         if (u == v) return u;
@@ -92,24 +91,29 @@ public:
 };
 
 void _main() {
-    int n;
-    cin >> n;
-
-    Graph G(n);
-    REP(i, n) {
-        int c, k; cin >> k;
-        REP(j, k) {
-            cin >> c;
-            G[i].push_back(c);
-        }
-    }
+    Graph G{
+        {1, 2},
+        {0, 3},
+        {0},
+        {1, 4, 5},
+        {3},
+        {3, 6},
+        {5},
+    };
 
     LCA lca(G);
-    int q, u, v; cin >> q;
-    REP(i, q) {
-        cin >> u >> v;
-        cout << lca.query(u, v) << endl;
-    }
+
+    int v1 = lca.query(1, 2);
+    cout << v1 << endl;
+    assert(v1 == 0);
+
+    int v2 = lca.query(4, 6);
+    cout << v2 << endl;
+    assert(v2 == 3);
+
+    int v3 = lca.query(3, 6);
+    cout << v3 << endl;
+    assert(v3 == 3);
 }
 
 int main() {
