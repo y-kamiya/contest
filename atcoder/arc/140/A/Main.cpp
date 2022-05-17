@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <bits/stdc++.h>
 using namespace std;
 
@@ -51,11 +52,29 @@ void _main() {
     string S;
     cin >> N >> K >> S;
 
-    int n = S.size();
-    REP(i, n) {
-        f(S);
+    
+    FOR(i, 1, N+1) {
+        if (N%i != 0) continue;
+        int changes = 0;
+        int g = N/i;
+        DEBUG(i);
+        REP(j, i) {
+            vector<int> count(26, 0);
+            REP(k, g) {
+                int c = S[j+k*i] - 'a';
+                ++count[c];
+            }
+            auto m = *max_element(ALL(count));
+            changes += g - m;
+            DEBUG(i, j);
+            DEBUG(count);
+        }
+        if (changes <= K) {
+            cout << i << endl;
+            return;
+        }
     }
-
+    cout << N << endl;
 }
 
 int main() {
@@ -66,4 +85,4 @@ int main() {
 // 45minで断念
 // 計算量を満たす解法が見つからず
 // 最後の5minで考えた際、Nを等分に分割できる約数を考えればよさそうなところまで思いつく
-//
+// 解答を見てから実装してみたが、デバッグに30minほどかかった
