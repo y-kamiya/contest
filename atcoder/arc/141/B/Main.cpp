@@ -95,33 +95,50 @@ void _main() {
     ll N, M;
     cin >> N >> M;
 
-    vector<ll> c(60);
-    REP(i, 60) c[i] = 1ll<<i;
-
     int m = 0;
-    while (pow(2,m) < M) ++m;
-    ++m;
+    while ((1ll<<m) <= M) ++m;
 
-    if (N >= m) {
+    if (N > m) {
         cout << 0 << endl;
         return;
     }
 
-    c[m-1] = M - pow(2, m-1) + 1;
+    vector<ll> c(m+1, 0);
+    FOR(i, 1, m+1) c[i] = 1ll<<(i-1);
+
+    c[m] = M - (1ll<<(m-1)) + 1;
     DEBUG(m);
+    DEBUG(pow(2,m-1));
+    DEBUG(c[m]);
     DEBUG(c);
 
     vector<vector<mint>> dp(m+1, vector<mint>(N+1, 0));
-    REP(i, m+1) dp[i][0] = 1;
     FOR(i, 1, m+1) dp[i][1] = c[i];
+    // dp[1][1] = c[1];
+    // dp[2][1] = c[2];
+    // dp[3][1] = c[3];
+    // dp[2][2] = c[1] * c[2];
+    // dp[3][2] = c[3] * (c[2] + c[1]);
+    // dp[3][3] = c[1] * c[2] * c[3];
+    // dp[4][2] = c[4] * (c[3] + c[2] * c[1]);
+    // dp[4][3] = c[4] * c[3] * (c[2] + c[1]) + c[4] * c[2] * c[1];
 
-    FOR(i, 0, m) {
-        FOR(j, 0, N) {
-            dp[i+1][j+1] = dp[i][j] + dp[i][j+1];
+    FOR(i, 1, m) {
+        FOR(j, 1, i+1) {
+            if (j >= N) break;
+            FORR(k, i, j) {
+                DEBUG(i+1, j+1, k, j, i+1);
+                dp[i+1][j+1] += dp[k][j] * c[i+1];
+            }
         }
     }
 
     REP(i, m+1) DEBUG(dp[i]);
+
+    DEBUG(m, N);
+    mint ans = 0;
+    REP(i, m+1) ans += dp[i][N];
+    cout << ans << endl;
 }
 
 int main() {
