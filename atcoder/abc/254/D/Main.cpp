@@ -38,24 +38,26 @@ void _main() {
     int N;
     cin >> N;
 
-    vector<ll> a(N);
-    FOR(i, 1, N+1) a[i-1] = i*i;
+    vector<ll> a;
+    for(int i=1; i*i <= N; ++i) a.push_back(i*i);
 
     DEBUG(a.size());
     DEBUG(a);
 
     ll ans = 0;
     FOR(i, 1, N+1) {
-        int count = 0;
-        auto it = lower_bound(ALL(a), i);
-        auto d = distance(a.begin(), it);
-        DEBUG(i, d);
-        FOR(j, d, N) {
-            if (a[j] / i > N) break;
-            if (a[j] % i == 0) ++count;
+        auto k = i;
+        REP(j, a.size()) {
+            if (a[j] == 1) continue;
+            while (k % a[j] == 0) k /= a[j];
         }
-        ans += count;
-        // DEBUG(i, count);
+
+        REP(j, a.size()) {
+            DEBUG(i, k, j, a[j]);
+            if (k * a[j] > N) break;
+            ++ans;
+        }
+        DEBUG(i, ans);
     }
 
     cout << ans << endl;

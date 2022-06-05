@@ -36,15 +36,13 @@ void print(vector<T> vec, Tail... t) {
 using Graph = vector<vector<int>>;
 using P = pair<int,int>;
 
-ll bfs(const Graph &G, int x, int k) {
-    int N = G.size();
+ll bfs(const Graph &G, vector<int> &dist, int x, int k) {
     deque<P> que;
     que.push_back({0, x});
 
-    vector<int> dist(N, -1);
     dist[x] = 0;
 
-    ll ret = x+1;
+    vector<int> vs{x};
     int count = 0;
     while (!que.empty()) {
         const auto &p = que.front();
@@ -60,12 +58,17 @@ ll bfs(const Graph &G, int x, int k) {
             ++count;
             if (dist[nv] != -1) continue;
             dist[nv] = d+1;
-            ret += nv+1;
+            vs.push_back(nv);
             que.emplace_back(d+1, nv);
         }
     }
     DEBUG(x+1, k, count);
 
+    ll ret = 0;
+    REP(i, vs.size()) {
+        ret += vs[i]+1;
+        dist[vs[i]] = -1;
+    }
     return ret;
 }
 
@@ -81,12 +84,13 @@ void _main() {
         G[b].push_back(a);
     }
 
+    vector<int> dist(N, -1);
     int Q;
     cin >> Q;
     REP(i, Q) {
         int x, k; cin >> x >> k;
         --x;
-        cout << bfs(G, x, k) << endl;
+        cout << bfs(G, dist, x, k) << endl;
     }
 
 }
