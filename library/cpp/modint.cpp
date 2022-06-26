@@ -67,6 +67,17 @@ template<u64 Mod> struct Modint {
         val = val * rhs.val % Mod;
         return *this;
     }
+    // constexpr Modint &operator/=(Modint rhs) noexcept {
+    //     u64 exp = Mod - 2;
+    //     while (exp) {
+    //       if (exp % 2) {
+    //         *this *= rhs;
+    //       }
+    //       rhs *= rhs;
+    //       exp /= 2;
+    //     }
+    //     return *this;
+    // }
     constexpr Modint &operator/=(Modint rhs) noexcept {
         ll a = rhs.val, b = Mod, u = 1, v = 0;
         while (b) {
@@ -74,8 +85,8 @@ template<u64 Mod> struct Modint {
             a -= t * b; swap(a, b);
             u -= t * v; swap(u, v);
         }
+        if (u < 0) u += Mod;
         val = val * u % Mod;
-        if (u < 0) val += Mod;
         return *this;
     }
     constexpr bool operator == (const Modint& rhs) const noexcept {
