@@ -1,5 +1,6 @@
 #include <bits/stdc++.h>
 #include <functional>
+#include <queue>
 using namespace std;
 
 using ll = long long;
@@ -35,44 +36,73 @@ void print(vector<T> vec, Tail... t) {
 #endif
 
 
-ll f(const vector<ll> &A, int s, int t, ll L) {
-    if (t-s == 1) {
-        if (A[s] < L) return L;
-        return 0;
-    }
-
-    ll sum = 0;
-    FOR(i, s, t) {
-        sum += A[i];
-        if (sum >= L/2) {
-            DEBUG("aaaaaaaaa", i, s, t, sum, L);
-            auto c1 = f(A, s, i+1, sum);
-            auto c2 = f(A, i+1, t, L-sum);
-            return L + c1 + c2;
-        }
-    }
-
-    DEBUG("bbbbbbbb", s, t, sum, L);
-    return L + f(A, s, t, sum);
-}
+// ll f(const vector<ll> &A, int s, int t, ll L) {
+//     if (t-s == 1) {
+//         if (A[s] < L) return L;
+//         return 0;
+//     }
+//
+//     ll sum = 0;
+//     FOR(i, s, t) {
+//         sum += A[i];
+//         if (sum >= L/2) {
+//             DEBUG("aaaaaaaaa", i, s, t, sum, L);
+//             auto c1 = f(A, s, i+1, sum);
+//             auto c2 = f(A, i+1, t, L-sum);
+//             return L + c1 + c2;
+//         }
+//     }
+//
+//     DEBUG("bbbbbbbb", s, t, sum, L);
+//     return L + f(A, s, t, sum);
+// }
+//
+// void _main() {
+//     ll N, L;
+//     cin >> N >> L;
+//
+//     vector<ll> A(N, 0ll);
+//     REP(i, N) cin >> A[i];
+//
+//     sort(ALL(A), greater<ll>());
+//
+//     auto cost = f(A, 0, N, L);
+//     cout << cost << endl;
+//
+//
+// }
 
 void _main() {
     ll N, L;
     cin >> N >> L;
 
-    vector<ll> A(N, 0ll);
-    REP(i, N) cin >> A[i];
+    priority_queue<ll, vector<ll>, greater<ll>> que;
+    ll sum = 0;
+    REP(i, N) {
+        ll a;
+        cin >> a;
+        que.push(a);
+        sum += a;
+    }
+    if (L - sum != 0) {
+        que.push(L-sum);
+    }
 
-    sort(ALL(A), greater<ll>());
-
-    auto cost = f(A, 0, N, L);
-    cout << cost << endl;
-
-
+    ll ans = 0;
+    while (que.size() != 1) {
+        ll a = que.top(); que.pop();
+        ll b = que.top(); que.pop();
+        ans += a + b;
+        que.push(a+b);
+        DEBUG(a,b, ans);
+    }
+    DEBUG(que.top());
+    cout << ans << endl;
 }
 
 int main() {
     _main();
     return 0;
 }
+
 
