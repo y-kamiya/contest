@@ -40,20 +40,15 @@ void _main() {
 
     int sz = S.size();
     vector<vector<int>> dp(sz, vector(sz, 0));
-    FOR(i, 0, sz-2) {
-        if (S.substr(i, 3) != "iwi") continue;
-        dp[i][i+2] = 1;
-    }
-    REP(i, sz) DEBUG(dp[i]);
 
-    FOR(i, 3, sz) {
+    FOR(i, 2, sz) {
         FOR(j, 0, sz) {
             auto l = j;
             auto r = j + i;
             if (r >= sz) break;
 
             FOR(k, l, r) {
-                dp[l][r] = max(dp[l][r], max(dp[l][k], dp[k+1][r]));
+                dp[l][r] = max(dp[l][r], dp[l][k] + dp[k+1][r]);
             }
 
 
@@ -78,8 +73,6 @@ void _main() {
 }
 
 int main() {
-    _main();
-    _main();
     _main();
     return 0;
 }
