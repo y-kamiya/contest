@@ -1,6 +1,23 @@
 #include <bits/stdc++.h>
 using namespace std;
 
+class ostreamFork {
+public:
+    ostream &os1,&os2;
+    ostreamFork(ostream& os1, ostream& os2) : os1(os1), os2(os2) {}
+};
+template <class Data>
+ostreamFork& operator<<(ostreamFork& osf, Data d) {
+    osf.os1 << d; osf.os2 << d; return osf;
+}
+ostreamFork& operator<<(ostreamFork& osf, ostream& (*f)(ostream&)) {
+    osf.os1 << f; osf.os2 << f; return osf;
+}
+template <class ManipData>
+ostreamFork& operator<<(ostreamFork& osf, ostream& (*f)(ostream&, ManipData)) {
+    osf.os1 << f; osf.os2 << f; return osf;
+}
+
 using ll = long long;
 
 #define REP(i,n) for(int i=0, i##_len=(n); i<i##_len; ++i)
@@ -34,39 +51,30 @@ void print(vector<T> vec, Tail... t) {
 #define DEBUG(...)
 #endif
 
+ofstream file("_output.txt");
+ostreamFork osf(file, cout);
+
+vector<ll> create_n_divisor(int n) {
+    vector<ll> n_divisor(n+1, 0ll);
+    FOR(i, 1, n+1) {
+        for (int j=i; j<=n; j+=i) {
+            n_divisor[j]++;
+        }
+    }
+    return n_divisor;
+}
 
 void _main() {
-    int N, K;
-    cin >> N >> K;
+    int N;
+    cin >> N;
 
-    vector<int> a(N);
-    REP(i, N) cin >> a[i];
-
-    deque<int> que;
-    map<int,int> m;
-    int ans = 0;
-    REP(i, N) {
-        if (m.size() < K || m.find(a[i]) != m.end()) {
-            que.push_back(a[i]);
-            ++m[a[i]];
-            ans = max(ans, (int)que.size());
-            continue;
-        }
-
-        DEBUG("aaaaaaaaaaaaa ", i, m.size());
-        while (m.size() == K) {
-            auto f = que.front();
-            que.pop_front();
-            if (m[f] == 1) m.erase(f);
-            else --m[f];
-        }
-
-        que.push_back(a[i]);
-        ++m[a[i]];
-        ans = max(ans, (int)que.size());
+    auto n_divisor = create_n_divisor(N);
+    DEBUG(n_divisor);
+    ll ans = 0;
+    FOR(i, 1, N+1) {
+        ans += i * n_divisor[i];
     }
-
-    cout << ans << endl;
+    osf << ans << endl;
 }
 
 int main() {
