@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from urllib.request import urlopen
+from urllib.request import urlopen, Request
 from bs4 import BeautifulSoup
 import sys
 import os
@@ -18,7 +18,9 @@ def main():
         print("input problem url")
         url = input()
 
-    html = urlopen(url)
+    req = Request(url)
+    req.add_header("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36")
+    html = urlopen(req)
 
     # with open("example.html") as f:
     #     html = f.read()
