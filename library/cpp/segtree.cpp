@@ -74,6 +74,70 @@ public:
     }
 };
 
+template<typename T>
+class SegmentTreeLazy {
+    ll n = 1;
+    vector<ll> tree;
+    vector<ll> lazy;
+
+    T empty = 0;
+    T op(T a, T b) {
+        return a + b;
+    }
+    void _update(T &x, T val, T factor=1) {
+        x += val * factor;
+    }
+    void _update_child(T &x, T val) {
+        x += val / 2;
+    }
+
+public:
+    SegmentTreeLazy(ll size) {
+        while (n < size) n <<= 1;
+        tree.resize(2*n-1, empty);
+        lazy.resize(2*n-1, empty);
+    }
+
+    void eval(ll k, ll l, ll r) {
+        if (lazy[k] == empty) return;
+
+        _update(tree[k], lazy[k]);
+        if (r-l > 1) {
+            _update_child(lazy[2*k+1], lazy[k]);
+            _update_child(lazy[2*k+2], lazy[k]);
+        }
+
+        lazy[k] = empty;
+    }
+
+    void update(ll a, ll b, ll x, ll k=0, ll l=0, ll r=-1) {
+        if (r < 0) r = n;
+        eval(k, l, r);
+        if (b <= l || r <= a) return;
+        if (a <= l && r <= b) {
+            _update(lazy[k], x, r-l);
+            eval(k, l, r);
+        } else {
+            ll mid = (l+r)/2;
+            update(a, b, x, 2*k+1, l, mid);
+            update(a, b, x, 2*k+2, mid, r);
+            tree[k] = op(tree[2*k+1], tree[2*k+2]);
+        }
+    }
+
+    T query(ll a, ll b, ll k=0, ll l=0, ll r=-1) {
+        if (r < 0) r = n;
+        eval(k, l, r);
+        if (b <= l || r <= a) return empty;
+        if (a <= l && r <= b) return tree[k];
+
+        ll mid = (l+r)/2;
+        auto vl = query(a, b, 2*k+1, l, mid);
+        auto vr = query(a, b, 2*k+2, mid, r);
+        return op(vl, vr);
+    }
+};
+
 void _main() {
     vector<int> vec{1,2,3,4,5};
     SegmentTree<int> seg(vec.size());
@@ -89,6 +153,21 @@ void _main() {
     auto v2 = seg.query(0, vec.size());
     cout << v2 << endl;
     assert(v2 == 2);
+
+
+    SegmentTreeLazy<ll> seglazy(vec.size());
+    REP(i, vec.size()) {
+        seglazy.update(i, i+1, vec[i]);
+    }
+    auto v11 = seglazy.query(0, vec.size());
+    cout << v11 << endl;;
+    assert(v11 == 15);
+
+    int s = 1, t = 3;
+    seglazy.update(s, t+1, 2);
+    auto v12 = seglazy.query(0, vec.size());
+    cout << v12 << endl;
+    assert(v12 == 21);
 }
 
 int main() {
