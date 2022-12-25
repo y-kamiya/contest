@@ -99,9 +99,8 @@ template<u64 Mod> struct Modint {
         return os << x.value();
     }
 
-    constexpr Modint modpow(const Modint &mi) noexcept {
+    constexpr Modint modpow(u64 n) noexcept {
         u64 ret = 1;
-        u64 n = mi.value();
         while (n > 0) {
             if (n & 1) ret = ret * val % Mod;
             val = val * val % Mod;
@@ -109,6 +108,9 @@ template<u64 Mod> struct Modint {
         }
         val = ret;
         return *this;
+    }
+    constexpr Modint modpow(const Modint &mi) noexcept {
+        return modpow(mi.value());
     }
 };
 
