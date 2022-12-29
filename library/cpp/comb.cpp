@@ -75,6 +75,16 @@ void _main() {
 
     cout << c.comb(W+H-2, W-1) << endl;
 
+
+    int M = 5;
+    vector<vector<ll>> dp(M+1, vector(M+1, 0ll));
+    REP(i, M+1) dp[i][0] = dp[i][i] = 1;
+    FOR(i, 0, M) {
+        FOR(j, 0, i) {
+            dp[i+1][j+1] = dp[i][j] + dp[i][j+1];
+        }
+    }
+
 }
 
 int main() {
