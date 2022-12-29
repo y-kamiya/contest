@@ -111,6 +111,7 @@ void _main() {
             }
             DEBUG(i, j, prev, next, m);
             if (prev < 0 && N <= next) break;
+            if (j-1 > m) break;
         }
         if (ans.size() == i) {
             ans.push_back(m);

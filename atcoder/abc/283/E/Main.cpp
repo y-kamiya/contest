@@ -1,4 +1,5 @@
 #include <bits/stdc++.h>
+#include <climits>
 using namespace std;
 
 class ostreamFork {
@@ -79,12 +80,40 @@ ofstream file("_output.txt");
 ostreamFork osf(file, cout);
 
 
+static const int INF = INT_MAX/2;
+vector<pair<int,int>> ns = {{0,1},{1,0},{0,-1},{-1,0}};
 void _main() {
     int H,W;
     cin >> H >> W;
 
     vector<vector<int>> A(H, vector(W, 0));
     REP(i, H) REP(j, W) cin >> A[i][j];
+
+    vector<vector<vector<int>>> dp(H+1, vector(2, vector(2, INF)));
+    REP(j, 2) REP(k, 2) dp[0][j][k] = 0;
+    FOR(i, 0, H) {
+        REP(j, 2) {
+            REP(k, 2) {
+                auto isolated = false;
+                REP(w, W) {
+                    auto iso = true;
+                    for (const auto &[x,y] : ns) {
+                        if (i+y < 0 || H <= i+y) continue;
+                        if (w+x < 0 || W <= w+x) continue;
+                        if (A[i][w] == A[i+y][w+x]) {
+                            iso = false;
+                            break;
+                        }
+                    }
+                    if (iso) {
+                        isolated = true;
+                        break;
+                    }
+                }
+                dp[i+1][j][k] = min(dp[i][0][j], dp[i][1][j]) + k;
+            }
+        }
+    }
 
 
 }
