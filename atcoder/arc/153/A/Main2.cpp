@@ -79,50 +79,20 @@ ofstream file("_output.txt");
 ostreamFork osf(file, cout);
 
 
-int calc(int a, int i, int n) {
-    if (i <= a) return a - i;
-    else {
-        i -= a;
-        n -= a;
-        return n - i + a;
-    }
-}
-
 void _main() {
-    int H,W,Q;
-    cin >> H >> W;
+    int N;
+    cin >> N;
 
-    vector<vector<char>> A(H, vector<char>(W));
-    REP(i, H) REP(j, W) cin >> A[i][j];
+    int n = 100000 + N - 1;
+    auto a = n / 100000 % 10;
+    auto b = n / 10000 % 10;
+    auto c = n / 1000 % 10;
+    auto d = n / 100 % 10;
+    auto e = n / 10 % 10;
+    auto f = n / 1 % 10;
+    DEBUG(n, a);
 
-    int hi = 0, wi = 0;
-
-    cin >> Q;
-    REP(q, Q) {
-        int a,b; cin >> a >> b;
-        --a, --b;
-        hi = calc(a, hi, H);
-        wi = calc(b, wi, W);
-        DEBUG(hi, wi);
-    }
-
-    vector<int> h(H), w(W);
-    if (Q % 2 == 0) {
-        REP(i, H) h[(hi+i)%H] = i;
-        REP(i, W) w[(wi+i)%W] = i;
-    } else {
-        REP(i, H) h[(hi-i+H)%H] = i;
-        REP(i, W) w[(wi-i+W)%W] = i;
-    }
-    DEBUG(h, w);
-
-    REP(i, H) {
-        REP(j, W) {
-            osf << A[h[i]][w[j]];
-        }
-        osf << endl;
-    }
-
+    osf << a << a << b << c << d << d << e << f << e << endl;;
 }
 
 int main() {
