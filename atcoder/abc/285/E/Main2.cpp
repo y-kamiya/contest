@@ -80,54 +80,29 @@ ostreamFork osf(file, cout);
 
 
 void _main() {
-    int N;
+    ll N;
     cin >> N;
 
-    vector<string> SS(N);
-    REP(i, N) cin >> SS[i];
+    vector<ll> A(N+1, 0), B(N+1, 0);
+    FOR(i, 1, N+1) cin >> A[i];
 
-    vector<int> indexes(N);
-    iota(ALL(indexes), 0);
-
-    sort(ALL(indexes), [&SS](ll a, ll b) {
-        return SS[a] < SS[b];
-    });
-    sort(ALL(SS));
-    DEBUG(indexes);
-    DEBUG(SS);
-
-    vector<int> vec(N, 0);
-
-    REP(i, N) {
-        int ans = 0;
-        auto s = SS[i];
-        if (i > 0) {
-            auto t = SS[i-1];
-            int cnt = 0;
-            int l = min(s.size(), t.size());
-            REP(j, l) {
-                if (s[j] == t[j]) cnt++;
-                else break;
-            }
-            ans = max(ans, cnt);
+    FOR(i, 1, N) {
+        ll M = (i+1)/2;
+        FOR(j, 1, M+1) {
+            B[i] += 2 * A[j];
         }
-        if (i < N-1) {
-            auto t = SS[i+1];
-            int cnt = 0;
-            int l = min(s.size(), t.size());
-            REP(j, l) {
-                if (s[j] == t[j]) cnt++;
-                else break;
-            }
-            ans = max(ans, cnt);
+        if (i%2 != 0) B[i] -= A[M];
+    }
+    DEBUG(B);
+
+    vector<ll> dp(N+2, 0);
+    FOR(i, 1, N+2) {
+        FOR(j, 1, i) {
+            dp[i] = max(dp[i], dp[j] + B[i-j-1]);
         }
-        vec[indexes[i]] = ans;
     }
-
-    REP(i, N) {
-        osf << vec[i] << endl;
-    }
-
+    DEBUG(dp);
+    osf << dp[N+1] << endl;
 }
 
 int main() {

@@ -78,56 +78,82 @@ void print(Cont<Ts...> ts, Tail... t) {
 ofstream file("_output.txt");
 ostreamFork osf(file, cout);
 
+template <typename T>
+std::vector<std::tuple<T, int, int>> manhattan_mst(std::vector<T> xs, std::vector<T> ys) {
+    const int n = xs.size();
+    std::vector<int> idx(n);
+    std::iota(idx.begin(), idx.end(), 0);
+    std::vector<std::tuple<T, int, int>> ret;
+    for (int s = 0; s < 2; s++) {
+        for (int t = 0; t < 2; t++) {
+            auto cmp = [&](int i, int j) { return xs[i] + ys[i] < xs[j] + ys[j]; };
+            std::sort(idx.begin(), idx.end(), cmp);
+            std::map<T, int> sweep;
+            for (int i : idx) {
+                for (auto it = sweep.lower_bound(-ys[i]); it != sweep.end(); it = sweep.erase(it)) {
+                    int j = it->second;
+                    if (xs[i] - xs[j] < ys[i] - ys[j]) break;
+                    ret.emplace_back(std::abs(xs[i] - xs[j]) + std::abs(ys[i] - ys[j]), i, j);
+                }
+                sweep[-ys[i]] = i;
+            }
+            std::swap(xs, ys);
+        }
+        for (auto &x : xs) x = -x;
+    }
+    std::sort(ret.begin(), ret.end());
+    return ret;
+}
+
+struct UnionFind {
+    int n;
+    vector<int> par;
+
+    UnionFind(int n): n(n) {
+        par.resize(n);
+        REP(i, n) par[i] = i;
+    }
+
+    int root(int a) {
+        if (par[a] == a) return a;
+        return par[a] = root(par[a]);
+    }
+
+    int same(int a, int b) {
+        return root(a) == root(b);
+    }
+
+    void merge(int a, int b) {
+        auto x = root(a);
+        auto y = root(b);
+        if (x == y) return;
+        par[x] = y;
+    }
+};
+
 
 void _main() {
     int N;
     cin >> N;
 
-    vector<string> SS(N);
-    REP(i, N) cin >> SS[i];
+    vector<int> P(N), x(N);
+    REP(i, N) cin >> P[i];
+    iota(ALL(x), 0);
 
-    vector<int> indexes(N);
-    iota(ALL(indexes), 0);
-
-    sort(ALL(indexes), [&SS](ll a, ll b) {
-        return SS[a] < SS[b];
-    });
-    sort(ALL(SS));
-    DEBUG(indexes);
-    DEBUG(SS);
-
-    vector<int> vec(N, 0);
-
-    REP(i, N) {
-        int ans = 0;
-        auto s = SS[i];
-        if (i > 0) {
-            auto t = SS[i-1];
-            int cnt = 0;
-            int l = min(s.size(), t.size());
-            REP(j, l) {
-                if (s[j] == t[j]) cnt++;
-                else break;
-            }
-            ans = max(ans, cnt);
-        }
-        if (i < N-1) {
-            auto t = SS[i+1];
-            int cnt = 0;
-            int l = min(s.size(), t.size());
-            REP(j, l) {
-                if (s[j] == t[j]) cnt++;
-                else break;
-            }
-            ans = max(ans, cnt);
-        }
-        vec[indexes[i]] = ans;
+    auto vec = manhattan_mst(x, P);
+    UnionFind uf(N);
+    vector<int> dist(N, INT_MAX);
+    for (auto [w, i, j] : vec) {
+        if (uf.same(i, j)) continue;
+        uf.merge(i, j);
+        dist[i] = min(dist[i], w);
+        dist[j] = min(dist[j], w);
     }
 
     REP(i, N) {
-        osf << vec[i] << endl;
+        osf << dist[i] << " ";
     }
-
+    osf << endl;
 }
 
 int main() {

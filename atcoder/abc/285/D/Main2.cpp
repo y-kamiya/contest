@@ -1,4 +1,5 @@
 #include <bits/stdc++.h>
+#include <string>
 using namespace std;
 
 class ostreamFork {
@@ -78,56 +79,55 @@ void print(Cont<Ts...> ts, Tail... t) {
 ofstream file("_output.txt");
 ostreamFork osf(file, cout);
 
+template<typename T>
+struct UnionFind {
+    int n;
+    map<T, T> par;
+
+    UnionFind(const vector<string> ss, const vector<string> tt) {
+        n = ss.size();
+        for (auto s : ss) par[s] = s;
+        for (auto t : tt) par[t] = t;
+    }
+
+    T root(T a) {
+        if (par[a] == a) return a;
+        return par[a] = root(par[a]);
+    }
+
+    int same(T a, T b) {
+        return root(a) == root(b);
+    }
+
+    void merge(T a, T b) {
+        auto x = root(a);
+        auto y = root(b);
+        if (x == y) return;
+        par[x] = y;
+    }
+};
+
 
 void _main() {
     int N;
     cin >> N;
 
-    vector<string> SS(N);
-    REP(i, N) cin >> SS[i];
+    vector<string> S(N), T(N);
+    REP(i, N) cin >> S[i] >> T[i];
 
-    vector<int> indexes(N);
-    iota(ALL(indexes), 0);
-
-    sort(ALL(indexes), [&SS](ll a, ll b) {
-        return SS[a] < SS[b];
-    });
-    sort(ALL(SS));
-    DEBUG(indexes);
-    DEBUG(SS);
-
-    vector<int> vec(N, 0);
+    UnionFind<string> uf(S, T);
 
     REP(i, N) {
-        int ans = 0;
-        auto s = SS[i];
-        if (i > 0) {
-            auto t = SS[i-1];
-            int cnt = 0;
-            int l = min(s.size(), t.size());
-            REP(j, l) {
-                if (s[j] == t[j]) cnt++;
-                else break;
-            }
-            ans = max(ans, cnt);
+        auto s = S[i];
+        auto t = T[i];
+        if (uf.same(s,t)) {
+            DEBUG(i, s, t);
+            Yes(0);
+            return;
         }
-        if (i < N-1) {
-            auto t = SS[i+1];
-            int cnt = 0;
-            int l = min(s.size(), t.size());
-            REP(j, l) {
-                if (s[j] == t[j]) cnt++;
-                else break;
-            }
-            ans = max(ans, cnt);
-        }
-        vec[indexes[i]] = ans;
+        uf.merge(s,t);
     }
-
-    REP(i, N) {
-        osf << vec[i] << endl;
-    }
-
+    Yes(1);
 }
 
 int main() {

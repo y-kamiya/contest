@@ -1,4 +1,5 @@
 #include <bits/stdc++.h>
+#include <climits>
 using namespace std;
 
 class ostreamFork {
@@ -74,60 +75,64 @@ void print(Cont<Ts...> ts, Tail... t) {
 #define DEBUG(...)
 #endif
  
+static const vector<pair<int,int>> nps = {{0,1},{1,0},{0,-1},{-1,0}};
+static const int INF = INT_MAX/2;
 
 ofstream file("_output.txt");
 ostreamFork osf(file, cout);
 
 
 void _main() {
-    int N;
-    cin >> N;
+    int H,W;
+    cin >> H >> W;
 
-    vector<string> SS(N);
-    REP(i, N) cin >> SS[i];
+    vector<vector<int>> A(H, vector(W, 0));
+    REP(i, H) REP(j, W) cin >> A[i][j];
 
-    vector<int> indexes(N);
-    iota(ALL(indexes), 0);
+    vector<vector<vector<int>>> dp(H+1, vector(2, vector(2, INF)));
+    dp[0][0][0] = 0;
+    dp[0][1][0] = 1;
 
-    sort(ALL(indexes), [&SS](ll a, ll b) {
-        return SS[a] < SS[b];
-    });
-    sort(ALL(SS));
-    DEBUG(indexes);
-    DEBUG(SS);
+    FOR(i, 1, H+1) {
+        REP(j, 2) {
+            REP(k, 2) {
+                REP(l, 2) {
+                    vector<vector<int>> x(3, vector(W, -1));
+                    if (i != 1) x[0] = A[i-2];
+                    if (k) REP(m, W) x[0][m] = 1-x[0][m];
 
-    vector<int> vec(N, 0);
+                    x[1] = A[i-1];
+                    if (j) REP(m, W) x[1][m] = 1-x[1][m];
 
-    REP(i, N) {
-        int ans = 0;
-        auto s = SS[i];
-        if (i > 0) {
-            auto t = SS[i-1];
-            int cnt = 0;
-            int l = min(s.size(), t.size());
-            REP(j, l) {
-                if (s[j] == t[j]) cnt++;
-                else break;
+                    if (i != H) x[2] = A[i];
+                    if (l) REP(m, W) x[2][m] = 1-x[2][m];
+
+                    bool alone = false;
+                    REP(w, W) {
+                        vector<bool> b;
+                        for (auto [s,t] : nps) {
+                            auto nh = 1+t;
+                            auto nw = w+s;
+                            if (nw < 0 || W <= nw) continue;
+                            b.push_back(x[1][w] == x[nh][nw]);
+                        }
+                        if (!any_of(ALL(b), [](bool x) {return x;})) {
+                            alone = true;
+                            break;
+                        }
+                    }
+                    if (!alone) {
+                        dp[i][j][k] = min(dp[i][l][j], dp[i-1][j][k] + (int)l);
+                    }
+                }
             }
-            ans = max(ans, cnt);
         }
-        if (i < N-1) {
-            auto t = SS[i+1];
-            int cnt = 0;
-            int l = min(s.size(), t.size());
-            REP(j, l) {
-                if (s[j] == t[j]) cnt++;
-                else break;
-            }
-            ans = max(ans, cnt);
-        }
-        vec[indexes[i]] = ans;
     }
-
-    REP(i, N) {
-        osf << vec[i] << endl;
-    }
-
+    DEBUG(dp);
+    auto ans = INF;
+    REP(j, 2) REP(k, 2) ans = min(ans, dp[H][j][k]);
+    if (ans == INF) ans = -1;
+    osf << ans << endl;
 }
 
 int main() {
